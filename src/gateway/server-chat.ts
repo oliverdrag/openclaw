@@ -731,10 +731,10 @@ export function createAgentEventHandler({
       if (toolPhase === "start" && isControlUiVisible && sessionKey && !isAborted) {
         flushBufferedChatDeltaIfNeeded(sessionKey, clientRunId, evt.runId, evt.seq);
       }
-      // Always broadcast tool events to registered WS recipients with
-      // tool-events capability, regardless of verboseLevel. The verbose
-      // setting only controls whether tool details are sent as channel
-      // messages to messaging surfaces (Telegram, Discord, etc.).
+      // Broadcast tool events to ALL connected clients so operator UIs (like Kanto)
+      // can render tool call progress cards in real time.
+      broadcast("agent", toolPayload);
+      // Also send to registered tool-event recipients (legacy per-run subscriptions).
       const recipients = toolEventRecipients.get(evt.runId);
       if (recipients && recipients.size > 0) {
         broadcastToConnIds("agent", toolPayload, recipients);
