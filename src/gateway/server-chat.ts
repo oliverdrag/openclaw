@@ -733,7 +733,8 @@ export function createAgentEventHandler({
       }
       // Broadcast tool events to ALL connected clients so operator UIs (like Kanto)
       // can render tool call progress cards in real time.
-      broadcast("agent", toolPayload);
+      // Use agentPayload (not toolPayload) so result/args are included.
+      broadcast("agent", agentPayload);
       // Also send to registered tool-event recipients (legacy per-run subscriptions).
       const recipients = toolEventRecipients.get(evt.runId);
       if (recipients && recipients.size > 0) {
