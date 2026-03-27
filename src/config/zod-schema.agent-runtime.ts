@@ -802,6 +802,7 @@ export const AgentEntrySchema = z
     params: z.record(z.string(), z.unknown()).optional(),
     tools: AgentToolsSchema,
     runtime: AgentRuntimeSchema,
+    mcpServers: z.array(z.string()).optional(),
   })
   .strict();
 

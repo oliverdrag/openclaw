@@ -34,7 +34,11 @@ import { resolveUserPath } from "../../utils.js";
 import { normalizeMessageChannel } from "../../utils/message-channel.js";
 import { isReasoningTagProvider } from "../../utils/provider-utils.js";
 import { resolveOpenClawAgentDir } from "../agent-paths.js";
-import { resolveSessionAgentId, resolveSessionAgentIds } from "../agent-scope.js";
+import {
+  resolveAgentConfig,
+  resolveSessionAgentId,
+  resolveSessionAgentIds,
+} from "../agent-scope.js";
 import type { ExecElevatedDefaults } from "../bash-tools.js";
 import { makeBootstrapWarn, resolveBootstrapContextForRun } from "../bootstrap-files.js";
 import { listChannelSupportedActions, resolveChannelMessageToolHints } from "../channel-tools.js";
@@ -784,11 +788,16 @@ export async function compactEmbeddedPiSessionDirect(
       tools: toolsEnabled ? toolsRaw : [],
       provider,
     });
+    const compactAgentId = resolveSessionAgentId({
+      sessionKey: params.sessionKey,
+      config: params.config,
+    });
     const bundleMcpRuntime = toolsEnabled
       ? await createBundleMcpToolRuntime({
           workspaceDir: effectiveWorkspace,
           cfg: params.config,
           reservedToolNames: tools.map((tool) => tool.name),
+          mcpServerAllowList: resolveAgentConfig(params.config ?? {}, compactAgentId)?.mcpServers,
         })
       : undefined;
     const bundleLspRuntime = toolsEnabled

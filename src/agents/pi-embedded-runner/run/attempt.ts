@@ -34,7 +34,7 @@ import { resolveUserPath } from "../../../utils.js";
 import { normalizeMessageChannel } from "../../../utils/message-channel.js";
 import { isReasoningTagProvider } from "../../../utils/provider-utils.js";
 import { resolveOpenClawAgentDir } from "../../agent-paths.js";
-import { resolveSessionAgentIds } from "../../agent-scope.js";
+import { resolveAgentConfig, resolveSessionAgentIds } from "../../agent-scope.js";
 import { createAnthropicPayloadLogger } from "../../anthropic-payload-log.js";
 import { createAnthropicVertexStreamFnForModel } from "../../anthropic-vertex-stream.js";
 import {
@@ -1847,6 +1847,7 @@ export async function runEmbeddedAttempt(
             ...tools.map((tool) => tool.name),
             ...(clientTools?.map((tool) => tool.function.name) ?? []),
           ],
+          mcpServerAllowList: resolveAgentConfig(params.config ?? {}, sessionAgentId)?.mcpServers,
         })
       : undefined;
     const bundleLspRuntime = toolsEnabled

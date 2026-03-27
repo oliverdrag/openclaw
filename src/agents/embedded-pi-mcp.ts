@@ -11,6 +11,8 @@ export type EmbeddedPiMcpConfig = {
 export function loadEmbeddedPiMcpConfig(params: {
   workspaceDir: string;
   cfg?: OpenClawConfig;
+  /** Per-agent MCP server allow-list. Omit or `["*"]` = all; `[]` = none. */
+  mcpServerAllowList?: string[];
 }): EmbeddedPiMcpConfig {
   const bundleMcp = loadEnabledBundleMcpConfig({
     workspaceDir: params.workspaceDir,
@@ -18,12 +20,27 @@ export function loadEmbeddedPiMcpConfig(params: {
   });
   const configuredMcp = normalizeConfiguredMcpServers(params.cfg?.mcp?.servers);
 
-  return {
+  let mcpServers: Record<string, BundleMcpServerConfig> = {
     // OpenClaw config is the owner-managed layer, so it overrides bundle defaults.
-    mcpServers: {
-      ...bundleMcp.config.mcpServers,
-      ...configuredMcp,
-    },
+    ...bundleMcp.config.mcpServers,
+    ...configuredMcp,
+  };
+
+  // Apply per-agent MCP server filtering when an allow-list is provided.
+  const allowList = params.mcpServerAllowList;
+  if (allowList && !allowList.includes("*")) {
+    const allowed = new Set(allowList.map((s) => s.toLowerCase()));
+    const filtered: Record<string, BundleMcpServerConfig> = {};
+    for (const [name, server] of Object.entries(mcpServers)) {
+      if (allowed.has(name.toLowerCase())) {
+        filtered[name] = server;
+      }
+    }
+    mcpServers = filtered;
+  }
+
+  return {
+    mcpServers,
     diagnostics: bundleMcp.diagnostics,
   };
 }

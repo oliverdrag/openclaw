@@ -4936,6 +4936,12 @@ export const GENERATED_BASE_CONFIG_SCHEMA = {
                     },
                   ],
                 },
+                mcpServers: {
+                  type: "array",
+                  items: {
+                    type: "string",
+                  },
+                },
               },
               required: ["id"],
               additionalProperties: false,

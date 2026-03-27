@@ -123,10 +123,13 @@ export async function createBundleMcpToolRuntime(params: {
   workspaceDir: string;
   cfg?: OpenClawConfig;
   reservedToolNames?: Iterable<string>;
+  /** Per-agent MCP server allow-list. Omit or `["*"]` = all; `[]` = none. */
+  mcpServerAllowList?: string[];
 }): Promise<BundleMcpToolRuntime> {
   const loaded = loadEmbeddedPiMcpConfig({
     workspaceDir: params.workspaceDir,
     cfg: params.cfg,
+    mcpServerAllowList: params.mcpServerAllowList,
   });
   for (const diagnostic of loaded.diagnostics) {
     logWarn(`bundle-mcp: ${diagnostic.pluginId}: ${diagnostic.message}`);

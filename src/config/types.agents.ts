@@ -93,6 +93,13 @@ export type AgentConfig = {
   tools?: AgentToolsConfig;
   /** Optional runtime descriptor for this agent. */
   runtime?: AgentRuntimeConfig;
+  /**
+   * Per-agent MCP server allow-list.
+   * - Omit or `["*"]` → agent can use all globally configured MCP servers.
+   * - `["server-a", "server-b"]` → only those servers are loaded for this agent.
+   * - `[]` → no MCP servers available.
+   */
+  mcpServers?: string[];
 };
 
 export type AgentsConfig = {
